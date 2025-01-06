@@ -2,8 +2,10 @@
 FROM python:3.11-slim
 
 # Устанавливаем необходимые локали
-RUN apt-get update && apt-get install -y locales \
-    && locale-gen ru_RU.UTF-8
+RUN apt-get update && apt-get install -y locales
+
+# Добавляем русскую локаль и генерируем её
+RUN echo "ru_RU.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
 # рабочая директория внутри докер имаджа
 WORKDIR /opt/ptsb-notifier

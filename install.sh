@@ -58,11 +58,9 @@ echo "════════════════════════�
 echo " "
 
 if command -v docker-compose &> /dev/null && docker-compose --version &> /dev/null; then
-    compose_cmd="docker-compose"
-    echo "1"
+    compose_cmd="./builder docker-compose"
 elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
-    compose_cmd="docker compose"
-    echo "2"
+    compose_cmd="./builder docker compose"
 else
     echo "Ошибка: Команды 'docker-compose' или 'docker compose' не были найдены. Пожалуйста, установите docker & docker-compose."
     exit 1

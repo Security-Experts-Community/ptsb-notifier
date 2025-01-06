@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  ptsb-notifier:
+    container_name: ptsb-notifier
+    build:
+      context: ../                    # путь к папке проекта (где лежат `ptsb-notifier/` и `config/`)
+      dockerfile: builder/Dockerfile  # докерфайл сборки образа
+    ports:
+      - "1468:514"                     # Пробрасываем порт 514 наружу
+    env_file:
+      - ../config/default.env         # Подключаем файл переменных окружения
+    volumes:
+      - ../ptsb-notifier/json_data_sets:/opt/ptsb-notifier/json_data_sets:ro  # монтируем json_data_sets как read-only
+    restart: always

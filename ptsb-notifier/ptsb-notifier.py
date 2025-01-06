@@ -180,9 +180,9 @@ async def start_server(local_host_addr: str, local_port: int ) -> None:
 
 
 # ф-ия конвертации UNIX времени в человеко-читаемое
-async def get_datetime_with_offset(timestamp: float, offset_hours: int = 3) -> str:
+async def get_datetime_with_offset(timestamp: float, offset_hours: int = 0) -> str:
     """
-    Конвертирует timestamp в дату и время с указанным смещением относительно UTC. По умолчанию `offset_hours` = +3
+    Конвертирует timestamp в дату и время с указанным смещением относительно UTC. По умолчанию `offset_hours` = 0
     
     Параметры:
     - `timestamp` (float): UNIX timestamp временная метка, для которой нужно создать смещение.
@@ -252,9 +252,9 @@ async def send_event_to_tg() -> None:
                 #"<b>Новое задание требует внимания!</b>\n\n"
                 f"<b>{threat_level}</b>\n\n"
                 f"<b>Статус проверки:</b> {state}\n\n"
-                f"<b>Классификация ВПО:</b>\n{classification}\n"
-                f"<b>Семейство ВПО:</b>\n{family}\n"
-                f"<b>Целевая ОС ВПО:</b>\n{platform}\n\n"
+                f"<b>Классификация ВПО:</b> {classification}\n"
+                f"<b>Семейство ВПО:</b> {family}\n"
+                f"<b>Целевая ОС ВПО:</b> {platform}\n\n"
                 "<b>Вердикт получен в:</b>\n"
                 f"{created_utc} // по UTC\n"
                 f"{created_custom} // по местному"

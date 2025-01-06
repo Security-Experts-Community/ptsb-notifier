@@ -58,30 +58,32 @@ echo "════════════════════════�
 echo " "
 
 if command -v docker-compose &> /dev/null && docker-compose --version &> /dev/null; then
-    compose_cmd="./builder docker-compose"
+    compose_cmd="docker-compose"
 elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
-    compose_cmd="./builder docker compose"
+    compose_cmd="docker compose"
 else
     echo "Ошибка: Команды 'docker-compose' или 'docker compose' не были найдены. Пожалуйста, установите docker & docker-compose."
     exit 1
 fi
 
+builder_dir="./builder"
+
 if docker images | grep -q "ptsb-notifier"; then
     read -p "Образ 'ptsb-notifier' уже существует. Вы хотите обновить образ или пересобрать его заново? (update/rebuild): " choice
     case $choice in
         update)
-            $compose_cmd down
-            $compose_cmd up -d
+            $compose_cmd -f "$builder_dir/docker-compose.yaml" down
+            $compose_cmd -f "$builder_dir/docker-compose.yaml" up -d
             ;;
         rebuild)
-            $compose_cmd down
+            $compose_cmd -f "$builder_dir/docker-compose.yaml" down
             docker rmi ptsb-notifier
-            $compose_cmd up -d
+            $compose_cmd -f "$builder_dir/docker-compose.yaml" up -d
             ;;
         *)
-            echo "Некорректный ввод. Пожалуйста введите 'update' или 'rebuild'."
+            echo "Некорректный ввод. Пожалуйста, введите 'update' или 'rebuild'."
             ;;
     esac
 else
-    $compose_cmd up -d
+    $compose_cmd -f "$builder_dir/docker-compose.yaml" up -d
 fi

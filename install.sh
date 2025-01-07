@@ -78,7 +78,6 @@ if docker images | grep -q "ptsb-notifier"; then
         rebuild)
             $compose_cmd -f "$builder_dir/docker-compose.yaml" down
             docker images --filter "reference=builder-ptsb-notifier" -q | xargs -r docker rmi
-            $compose_cmd -f "$builder_dir/docker-compose.yaml" build --no-cache
             $compose_cmd -f "$builder_dir/docker-compose.yaml" up -d
             ;;
         *)

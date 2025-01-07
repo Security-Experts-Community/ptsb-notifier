@@ -77,13 +77,13 @@ if docker images | grep -q "ptsb-notifier"; then
             ;;
         rebuild)
             $compose_cmd -f "$builder_dir/docker-compose.yaml" down
-            docker rmi ptsb-notifier
-            $compose_cmd -f "$builder_dir/docker-compose.yaml" up -d
+            docker images --filter "reference=builder-ptsb-notifier" -q | xargs -r docker rmi
+            $compose_cmd -f "$builder_dir/docker-compose.yaml" up --build -d
             ;;
         *)
             echo "Некорректный ввод. Пожалуйста, введите 'update' или 'rebuild'."
             ;;
     esac
 else
-    $compose_cmd -f "$builder_dir/docker-compose.yaml" up -d
+    $compose_cmd -f "$builder_dir/docker-compose.yaml" up --build -d
 fi

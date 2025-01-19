@@ -8,7 +8,7 @@ import signal as signal_lib
 import socket as socket_lib
 
 # классы
-from aiogram import Bot as Bot_class             #кастомнаямная
+from aiogram import Bot as Bot_class
 from aiogram.types import InlineKeyboardMarkup as KeyboardMarkup_class, InlineKeyboardButton as KeyboardButton_class
 from concurrent.futures import ThreadPoolExecutor as ThreadPoolExecutor_class
 from datetime import datetime as datetime_class, timezone as timezone_class, timedelta as timedelta_class
@@ -217,15 +217,15 @@ async def send_event_to_tg() -> None:
             
             # получаем scan_id текущего события
             scan_id = current_event['scan_id']
-            # получаем дату получения результатов в UTC и кастомном часовом поясе
-            created_utc = await get_datetime_with_offset(current_event['created'])
-            created_custom = await get_datetime_with_offset(current_event['created'], UTC_CUSTOM_OFFSET)
             # получаем уровень угрозы текущего события и переводим в красивый вид
             threat_level = current_event['result']['verdict']['threat_level']
             threat_level = JSON_DATA_SETS["threat_level"].get(threat_level)
             # получаем статус выполненного сканирования
             state = current_event['result']['state']
             state = JSON_DATA_SETS["result_state"].get(state)
+            # получаем тип источника, откуда пришло задание
+            entry_point = current_event['entry_point_type']
+            entry_point = JSON_DATA_SETS["entry_point_type"].get(entry_point)
             # получаем классификацию обнаруженного ВПО
             classification = current_event['result']['verdict']['threat']['classification']
             classification = JSON_DATA_SETS["threat_classification"].get(classification)
@@ -236,7 +236,9 @@ async def send_event_to_tg() -> None:
                 platform = "Целевая ОС не определена"
             else:
                 platform = current_event['result']['verdict']['threat']['platform']
-
+            # получаем дату получения результатов в UTC и кастомном часовом поясе
+            created_utc = await get_datetime_with_offset(current_event['created'])
+            created_custom = await get_datetime_with_offset(current_event['created'], UTC_CUSTOM_OFFSET)
             
             # формируем кнопку со ссылкой на страницу задания в PTSB
             event_url_button = KeyboardButton_class(
@@ -251,7 +253,8 @@ async def send_event_to_tg() -> None:
             message_to_chat = (
                 #"<b>Новое задание требует внимания!</b>\n\n"
                 f"<b>{threat_level}</b>\n\n"
-                f"<b>Статус проверки:</b> {state}\n\n"
+                f"<b>Статус проверки:</b> {state}\n"
+                f"<b>Источник</b>: {entry_point}\n\n"
                 f"<b>Классификация ВПО:</b> {classification}\n"
                 f"<b>Семейство ВПО:</b> {family}\n"
                 f"<b>Целевая ОС ВПО:</b> {platform}\n\n"

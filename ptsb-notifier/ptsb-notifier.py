@@ -9,9 +9,16 @@ import socket as socket_lib
 
 # классы
 from aiogram import Bot as Bot_class
-from aiogram.types import InlineKeyboardMarkup as KeyboardMarkup_class, InlineKeyboardButton as KeyboardButton_class
+from aiogram.types import (
+    InlineKeyboardMarkup as KeyboardMarkup_class,
+    InlineKeyboardButton as KeyboardButton_class,
+)
 from concurrent.futures import ThreadPoolExecutor as ThreadPoolExecutor_class
-from datetime import datetime as datetime_class, timezone as timezone_class, timedelta as timedelta_class
+from datetime import (
+    datetime as datetime_class,
+    timezone as timezone_class,
+    timedelta as timedelta_class,
+)
 from typing import Union as Union_class
 
 
@@ -39,7 +46,10 @@ events_to_process_queue = asyncio_lib.Queue()       # очередь, в кот�
 
 # импорт словарей-структур для красивого парсинга значений события в человеко-читаемый русский вид
 PYTHON_FILE_PATH = os_lib.path.abspath(__file__)
-DATA_SETS_DIR = os_lib.path.join(os_lib.path.dirname(PYTHON_FILE_PATH), "json_data_sets")
+DATA_SETS_DIR = os_lib.path.join(
+    os_lib.path.dirname(PYTHON_FILE_PATH),
+    "json_data_sets"
+)
 JSON_DATA_SETS = {}
 for filename in os_lib.listdir(DATA_SETS_DIR):
     current_file_path = os_lib.path.join(DATA_SETS_DIR, filename)
@@ -81,9 +91,9 @@ def process_event(event_data: str) -> Union_class[dict, None]:
     """
 
     # проверяем, есть ли то, что нужно
-    if not NEEDED_EVENT_DESCRIPTION in event_data:
+    if NEEDED_EVENT_DESCRIPTION not in event_data:
         return None
-    
+
     try:
         json_match = re_lib.search(r"\{.*\}", event_data)
         if json_match:
@@ -102,7 +112,10 @@ def process_event(event_data: str) -> Union_class[dict, None]:
 
 
 # Обработка подключения клиента
-async def handle_client_connection(client_socket: socket_lib.socket, event_loop: asyncio_lib.AbstractEventLoop) -> None:
+async def handle_client_connection(
+    client_socket: socket_lib.socket,
+    event_loop: asyncio_lib.AbstractEventLoop,
+) -> None:
     """
     Обрабатывает подключения от клиента, получая данные в каждой tcp-сессии.
     Подходящие после всех обработок данные передаются в `events_to_process_queue` для последующей отправки в tg.
@@ -115,21 +128,27 @@ async def handle_client_connection(client_socket: socket_lib.socket, event_loop:
         None
     """
 
-    buffer = "" # буфер для обработки каждого отдельного client_socket
+    buffer = ""  # буфер для обработки каждого отдельного client_socket
     try:
         while True:
-            received_data = await event_loop.sock_recv(client_socket, SESSION_SIZE)
+            received_data = await event_loop.sock_recv(
+                client_socket, SESSION_SIZE
+            )
             if not received_data:
                 break
 
             buffer += received_data.decode("utf-8")
-            
+
             while "\n" in buffer:
                 current_line, buffer = buffer.split("\n", 1)
-                result = await event_loop.run_in_executor(THREADS_EXECUTOR, process_event, current_line.strip())
+                result = await event_loop.run_in_executor(
+                    THREADS_EXECUTOR,
+                    process_event,
+                    current_line.strip(),
+                )
                 if result is not None:
                     await events_to_process_queue.put(result)
-                
+
 
     # ошибочки
     except asyncio_lib.CancelledError:
@@ -139,13 +158,17 @@ async def handle_client_connection(client_socket: socket_lib.socket, event_loop:
     finally:
         client_socket.close()
         if buffer.strip():
-            result = await event_loop.run_in_executor(THREADS_EXECUTOR, process_event, buffer.strip())
+            result = await event_loop.run_in_executor(
+                THREADS_EXECUTOR,
+                process_event,
+                buffer.strip(),
+            )
             if result is not None:
                 await events_to_process_queue.put(result)
 
 
 # Запуск сервера
-async def start_server(local_host_addr: str, local_port: int ) -> None:
+async def start_server(local_host_addr: str, local_port: int) -> None:
     """
     Запускает TCP-сервер, прослушивающий подключения клиентов на указанные addr:port.
     Создает async задачу обработки каждого входящего подключения.
@@ -171,7 +194,9 @@ async def start_server(local_host_addr: str, local_port: int ) -> None:
         while True:
             client_socket, _ = await current_loop.sock_accept(SERVER_SOCKET)
             # TODO: logging Connection established with {addr} ?
-            current_loop.create_task(handle_client_connection(client_socket, current_loop))
+            current_loop.create_task(
+                handle_client_connection(client_socket, current_loop)
+            )
     except asyncio_lib.CancelledError:
         print("Server task cancelled.")
     finally:
@@ -323,7 +348,10 @@ def setup_signals(current_event_loop: asyncio_lib.AbstractEventLoop) -> None:
     """
 
     for sig in (signal_lib.SIGINT, signal_lib.SIGTERM):
-        current_event_loop.add_signal_handler(sig, lambda: asyncio_lib.create_task(shutdown_server()))
+        current_event_loop.add_signal_handler(
+            sig,
+            lambda: asyncio_lib.create_task(shutdown_server()),
+        )
 
 
 # MAIN
@@ -342,7 +370,11 @@ async def main() -> None:
         server_listener_task.cancel()
         tg_event_sender_task.cancel()
 
-        await asyncio_lib.gather(server_listener_task, tg_event_sender_task, return_exceptions=True)
+        await asyncio_lib.gather(
+            server_listener_task,
+            tg_event_sender_task,
+            return_exceptions=True,
+        )
         print("\nGood Bye\n")
 
 

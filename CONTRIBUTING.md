@@ -42,8 +42,8 @@
 ### Шаблоны
 
 При создании issue используйте соответствующие шаблоны:
-- [Шаблон для сообщения об ошибках](.github/ISSUE_TEMPLATE/form_for_bugs.yml)
-- [Шаблон для предложения улучшений](.github/ISSUE_TEMPLATE/form_for_features.yml)
+- [Шаблон для сообщения об ошибках](https://github.com/Security-Experts-Community/ptsb-notifier/issues/new?template=form_for_bugs.yml)
+- [Шаблон для предложения улучшений](https://github.com/Security-Experts-Community/ptsb-notifier/issues/new?template=form_for_features.yml)
 
 ## ✅ Что приветствуется
 
@@ -91,7 +91,5 @@
 
 Внося изменения в проект, вы соглашаетесь с тем, что ваш вклад будет распространяться под [CC BY-NC 4.0](LICENSE).
 
-## Есть вопросы?
-
-- Создайте [issue](https://github.com/Security-Experts-Community/ptsb-notifier/issues) для обсуждения
-- Начните [дискуссию](https://github.com/Security-Experts-Community/ptsb-notifier/discussions) в репозитории 
+---
+Если у вас есть вопросы, создайте [issue](https://github.com/Security-Experts-Community/ptsb-notifier/issues) или свяжитесь с нами.

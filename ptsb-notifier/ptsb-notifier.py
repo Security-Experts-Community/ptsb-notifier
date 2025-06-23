@@ -255,10 +255,10 @@ async def send_event_to_tg() -> None:
             classification = current_event['result']['verdict']['threat']['classification']
             classification = JSON_DATA_SETS["threat_classification"].get(classification)
             # получаем семейство, к которому относится ВПО
-            family = current_event['result']['verdict']['threat']['family'] or "Семейство ВПО не определено"
+            family = current_event['result']['verdict']['threat']['family'] or "Не определено"
             # получаем целевую платформу, на которую нацелено ВПО
             if current_event['result']['verdict']['threat']['platform'] == "NO_PLATFORM":
-                platform = "Целевая ОС не определена"
+                platform = "Не определена"
             else:
                 platform = current_event['result']['verdict']['threat']['platform']
             # получаем дату получения результатов в UTC и кастомном часовом поясе

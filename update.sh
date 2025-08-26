@@ -35,9 +35,9 @@ check_command "docker"
 
 # определяем команду docker compose
 if command -v docker-compose &> /dev/null && docker-compose --version &> /dev/null; then
-    COMPOSE_CMD="docker-compose"
+    COMPOSE_CMD="sudo docker-compose"
 elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
-    COMPOSE_CMD="docker compose"
+    COMPOSE_CMD="sudo docker compose"
 else
     echo  " "
     echo -e "${RED}Error: Neither 'docker-compose' or 'docker compose' was not found on this host!${NC}"
@@ -121,6 +121,11 @@ if [ -f "/tmp/ptsb-notifier.env.bak" ]; then
     rm -f "/tmp/ptsb-notifier.env.bak"
     echo -e "${GREEN}App configuration was restored${NC}"
 fi
+
+# восстанавливаем разрешения файлам
+chmod +x install.sh
+chmox +x update.sh
+chmod +x uninstall.sh
 
 # пересобираем и запускаем контейнер
 echo "═════════════════════════════════════════════════════════════════════════════"

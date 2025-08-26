@@ -136,7 +136,7 @@ $COMPOSE_CMD -f ./builder/docker-compose.yaml up -d
 
 # проверяем статус контейнера
 sleep 5
-if docker ps | grep -q "ptsb-notifier"; then
+if sudo docker ps | grep -q "ptsb-notifier"; then
     echo -e "${GREEN}Container running normally!${NC}"
     echo -e "${GREEN}Update of an app has been finished!${NC}"
 else

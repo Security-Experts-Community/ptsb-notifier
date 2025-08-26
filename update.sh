@@ -124,7 +124,7 @@ fi
 
 # восстанавливаем разрешения файлам
 chmod +x install.sh
-chmox +x update.sh
+chmod +x update.sh
 chmod +x uninstall.sh
 
 # пересобираем и запускаем контейнер

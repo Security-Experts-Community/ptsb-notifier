@@ -2,7 +2,7 @@
 
 Telegram-бот для отправки уведомлений о новых сработках в системе Positive Technologies Sandbox
 
-![PT Sandbox](https://img.shields.io/badge/PT_Sandbox-5.23-6f42c1?style=for-the-badge&logo=shield-check&logoColor=white)  
+![PT Sandbox](https://img.shields.io/badge/PT_Sandbox-5.25-6f42c1?style=for-the-badge&logo=shield-check&logoColor=white)  
 *Текущая версия приложения проверена и работает с указанной версией PT Sandbox*
 
 ## 📋 Содержание

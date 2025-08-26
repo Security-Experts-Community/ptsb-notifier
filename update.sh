@@ -110,7 +110,8 @@ fi
 # скачивание новой версии приложения с git kaifuss
 echo " "
 echo -e "${YELLOW}Downloading new update of an app from git repo...${NC}"
-git pull origin main
+git fetch origin
+git reset --hard origin/main
 
 # восстанавливаем конфигурацию
 if [ -f "/tmp/ptsb-notifier.env.bak" ]; then

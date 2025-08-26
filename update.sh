@@ -82,7 +82,7 @@ echo -e "New version commit id:   ${REMOTE_COMMIT:0:7}"
 
 # запрашиваем подтверждение обновления
 echo  " "
-read -p "Do you want to proceed with update? (y/n): " -n 1 -r
+read -p "Do you want to proceed with update? (y/N): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo  " "

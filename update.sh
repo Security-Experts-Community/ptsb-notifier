@@ -86,31 +86,27 @@ echo " "
 echo -e "${YELLOW}Starting update pre-checks for locally modified files...${NC}"
 HAS_LOCAL_CHANGES=false
 LOCAL_CHANGES_MESSAGE=""
-# команды, которыми проверяем, что нет изменений
-LOCALLY_CHANGED_CMD="git diff --ignore-all-space . ':!config/*.env'"
-LOCALLY_STAGED_CMD="git diff --cached"
-LOCALLY_CREATED_CMD="git ls-files --others --exclude-standard"
 
 # чтобы не отслеживать изменения в исполняемости файлов chmod
 git config core.fileMode false
 
 # 1. проверяем изменения в отслеживаемых файлах (модифицированные но не staged)
-if $LOCALLY_CHANGED_CMD >/dev/null; then
+if ! git diff --quiet --ignore-all-space . ':!config/*.env' >/dev/null; then
     HAS_LOCAL_CHANGES=true
     LOCAL_CHANGES_MESSAGE+="Localy modified and not staged files:\n"
     LOCAL_CHANGES_MESSAGE+="$(git diff --name-only --ignore-all-space . ':!config/*.env')\n\n"
 fi
 
 # 2. проверяем staged изменения (добавленные в индекс)
-if ! $LOCALLY_STAGED_CMD >/dev/null; then
+if ! git diff --quiet --cached >/dev/null; then
     HAS_LOCAL_CHANGES=true
     LOCAL_CHANGES_MESSAGE+="Localy modified and staged changes (git add):\n"
     LOCAL_CHANGES_MESSAGE+="$(git diff --cached --name-only)\n\n"
 fi
 
 # 3. проверяем новые неотслеживаемые файлы
-UNTRACKED_FILES=$(eval "$LOCALLY_CREATED_CMD")
-if [ -n "$UNTRACKED_FILES" ]; then
+UNTRACKED_FILES=$(git ls-files --others --exclude-standard)
+if [ -n "$UNTRACKED_FILES >/dev/null" ]; then
     HAS_LOCAL_CHANGES=true
     LOCAL_CHANGES_MESSAGE+="Localy created new files:\n"
     LOCAL_CHANGES_MESSAGE+="$UNTRACKED_FILES\n\n"
@@ -167,7 +163,9 @@ if [ "$HAS_LOCAL_CHANGES" = true ]; then
             bash
             
             # после выхода из shell bash проверяем, остались ли конфликты
-            if $LOCALLY_CHANGED_CMD >/dev/null || ! $LOCALLY_STAGED_CMD >/dev/null || [ -n "$(eval "$LOCALLY_CREATED_CMD" >/dev/null)" ]; then
+            if ! git diff --quiet --ignore-all-space . ':!config/*.env' >/dev/null || \
+                ! git diff --quiet --cached >/dev/null || \
+                [ -n "$(git ls-files --others --exclude-standard) >/dev/null" ]; then
                 echo " "
                 echo -e "${RED}Local changes still exist. Current repo state is not up-to-date with origin/main. Resolve conflicts manually.${NC}"
                 echo -e "${RED}Aborting update.${NC}"

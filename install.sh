@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# скрипт установки приложения
+
 # отсюда берем значения
 if [ -f ./config/default.env ]; then
     source ./config/default.env
 fi
+
+# жесткое определение директории проекта для безопасности исполнения
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$PROJECT_DIR"
 
 echo "╔═══════════════════════════════════════════════════════════════════════════╗"
 echo "║                                  WELCOME                                  ║"
@@ -11,15 +17,30 @@ echo "║                       PT Sandbox Telegram Notifier                    
 echo "║                          by @github.com/kaifuss/                          ║"
 echo "╚═══════════════════════════════════════════════════════════════════════════╝"
 
+# проверка новых обновлений
+# получаем последние изменения из удаленного репозитория
+git fetch origin
+
+# находим общего предка между local HEAD и origin/main репой
+MERGE_BASE=$(git merge-base HEAD origin/main)
+
+# проверяем, есть ли новые коммиты в origin/main
+if [ "$(git rev-list $MERGE_BASE..origin/main --count)" -gt 0 ]; then
+    echo " "
+    echo "Hint: Original repo has new available updates for an app."
+    echo "Hint: Now you will work with your current app version."
+    echo "Hint: If you want to install the newest version - run './update.sh' script."
+fi
+
 echo " "
-echo "Перед запуском приложения его необходимо предварительно настроить."
-echo "Описание параметров приложения приведено ниже:"
+echo "Before running an application you must set up it."
+echo "Here is the description of its parameters:"
 echo "═════════════════════════════════════════════════════════════════════════════"
-echo "PTSB_MAIN_WEB: Адрес веб-интерфейса PT Sandbox, указываемый в браузере."
-echo "THREAT_FILTER_MODE: Уровень опасности вердикта, согласно которому определяется - подходит ли текущее событие для отправки или нет."
-echo "TG_BOT_TOKEN: Токен доступа к Вашему Telegram-боту, полученный от BotFather."
-echo "TG_CHAT_ID: ID чата в Telegram, куда необходимо отправлять уведомления."
-echo "UTC_CUSTOM_OFFSET: Смещение Вашего часового пояса относительно UTC (+0) в часах. Например, смещение для МСК = 3. Для Калининграда = -1"
+echo "PTSB_MAIN_WEB: Web address of PT Sandbox (without https://), (FQDN or IP)."
+echo "THREAT_FILTER_MODE: The danger level of the verdict, according to which it is determined whether the current event is suitable for sending or not."
+echo "TG_BOT_TOKEN: Access token to your Telegram-bot, that you got from BotFather."
+echo "TG_CHAT_ID: The ID of the Telegram chat to send notifications to."
+echo "UTC_CUSTOM_OFFSET: The offset of your time zone relative to UTC (+0) in hours. For example, the offset for MSK = 3. For Kaliningrad = -1"
 echo "═════════════════════════════════════════════════════════════════════════════"
 echo " "
 
@@ -31,7 +52,7 @@ input_with_default() {
 
   escaped_default_value=$(printf '%q' "$default_value")
 
-  read -p "Введите значение для ${var_name} (текущее: ${escaped_default_value}): " input
+  read -p "Enter value for parameter ${var_name} (current: ${escaped_default_value}): " input
   if [[ $input =~ [^a-zA-Z0-9_] ]]; then
     export $var_name="'${input:-$default_value}'"
   else
@@ -62,14 +83,14 @@ if command -v docker-compose &> /dev/null && docker-compose --version &> /dev/nu
 elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
     compose_cmd="docker compose"
 else
-    echo "Ошибка: Команды 'docker-compose' или 'docker compose' не были найдены. Пожалуйста, установите docker & docker-compose."
+    echo "Error: commands 'docker-compose' either 'docker compose' were not found. Please, install 'docker' & 'docker-compose' first."
     exit 1
 fi
 
 builder_dir="./builder"
 
 if docker images | grep -q "ptsb-notifier"; then
-    read -p "Образ 'ptsb-notifier' уже существует. Вы хотите обновить образ или пересобрать его заново? (update/rebuild): " choice
+    read -p "Image of 'ptsb-notifier' already exists. Do you want to update parameters of application or fully rebuild? (update/rebuild): " choice
     case $choice in
         update)
             $compose_cmd -f "$builder_dir/docker-compose.yaml" down
@@ -81,7 +102,7 @@ if docker images | grep -q "ptsb-notifier"; then
             $compose_cmd -f "$builder_dir/docker-compose.yaml" up -d
             ;;
         *)
-            echo "Некорректный ввод. Пожалуйста, введите 'update' или 'rebuild'."
+            echo "Incorrect input. Please, input 'update' or 'rebuild'."
             ;;
     esac
 else

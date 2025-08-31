@@ -202,7 +202,7 @@ else
     cp -f "./config/default.env" "/tmp/default.env.bak"
     echo -e "${YELLOW}Downloading update...${NC}"
     # скачиваем обновление
-    git pull origin main
+    git pull origin main >/dev/null
     # восстанвливаем конфигурацию
     echo -e "${YELLOW}Restoring app configuration to 'config/default.env'...${NC}"
     cp -f "/tmp/default.env.bak" "./config/default.env"

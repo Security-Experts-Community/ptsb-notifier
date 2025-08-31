@@ -106,7 +106,7 @@ fi
 
 # 3. проверяем новые неотслеживаемые файлы
 UNTRACKED_FILES=$(git ls-files --others --exclude-standard)
-if [ -n "$UNTRACKED_FILES >/dev/null" ]; then
+if [ -n "$UNTRACKED_FILES" ]; then
     HAS_LOCAL_CHANGES=true
     LOCAL_CHANGES_MESSAGE+="Localy created new files:\n"
     LOCAL_CHANGES_MESSAGE+="$UNTRACKED_FILES\n\n"
@@ -165,7 +165,7 @@ if [ "$HAS_LOCAL_CHANGES" = true ]; then
             # после выхода из shell bash проверяем, остались ли конфликты
             if ! git diff --quiet --ignore-all-space . ':!config/*.env' >/dev/null || \
                 ! git diff --quiet --cached >/dev/null || \
-                [ -n "$(git ls-files --others --exclude-standard) >/dev/null" ]; then
+                [ -n "$(git ls-files --others --exclude-standard)" ]; then
                 echo " "
                 echo -e "${RED}Local changes still exist. Current repo state is not up-to-date with origin/main. Resolve conflicts manually.${NC}"
                 echo -e "${RED}Aborting update.${NC}"
